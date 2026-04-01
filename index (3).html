@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Castanho — Produtor de Áudio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1628;
+    --blue: #0f4c8a;
+    --accent: #1a7fd4;
+    --white: #ffffff;
+    --off-white: #f7f9fc;
+    --gray-100: #eef1f6;
+    --gray-300: #b8c4d4;
+    --gray-500: #6b7a94;
+    --gray-700: #2e3a50;
+    --text: #0d1b2e;
+    --line: rgba(10,22,40,0.09);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 6vw; height: 64px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 18px; letter-spacing: -0.02em;
+    color: var(--navy); text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    font-size: 13px; font-weight: 500; color: var(--gray-500);
+    text-decoration: none; letter-spacing: 0.04em;
+    text-transform: uppercase; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--navy); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 100px 6vw 80px;
+    background: var(--off-white);
+    position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; top: -10%; right: 5%;
+    width: 40vw; height: 40vw;
+    border-radius: 50%;
+    border: 1px solid rgba(26,127,212,0.12);
+    pointer-events: none;
+  }
+  .hero-inner { max-width: 760px; position: relative; z-index: 1; }
+  .hero-tag {
+    display: inline-block; font-size: 11px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(26,127,212,0.08);
+    border: 1px solid rgba(26,127,212,0.2);
+    border-radius: 20px; padding: 5px 14px; margin-bottom: 28px;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: clamp(42px, 7vw, 80px);
+    line-height: 1.0; letter-spacing: -0.03em;
+    color: #0d1b2e; margin-bottom: 12px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero-sub {
+    font-size: clamp(15px, 2vw, 18px);
+    color: #2e3a50; font-weight: 300;
+    margin-bottom: 40px; max-width: 520px; line-height: 1.6;
+  }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 52px; }
+  .htag {
+    font-size: 12px; font-weight: 400; letter-spacing: 0.05em;
+    color: #2e3a50;
+    border: 1px solid rgba(10,22,40,0.15);
+    border-radius: 4px; padding: 6px 14px;
+  }
+  .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    padding: 13px 28px; border-radius: 6px; text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: #1568b8; transform: translateY(-1px); }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent; color: #2e3a50;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 400;
+    padding: 13px 28px; border-radius: 6px;
+    border: 1px solid rgba(10,22,40,0.2); text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: rgba(10,22,40,0.5); color: #0d1b2e; }
+
+  /* SECTIONS */
+  section { padding: 96px 6vw; }
+  section:nth-child(even) { background: var(--off-white); }
+
+  .section-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: clamp(26px, 4vw, 38px); letter-spacing: -0.025em;
+    color: var(--navy); margin-bottom: 48px; line-height: 1.15;
+  }
+
+  /* SOBRE */
+  .sobre-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  .sobre-text p { font-size: 16px; color: var(--gray-700); line-height: 1.75; margin-bottom: 18px; }
+  .sobre-text p:last-child { margin-bottom: 0; }
+  .sobre-stats {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1px; background: var(--line);
+    border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+  }
+  .stat { background: var(--white); padding: 28px 24px; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; color: var(--navy); line-height: 1; margin-bottom: 6px; }
+  .stat-label { font-size: 12px; color: var(--gray-500); line-height: 1.4; font-weight: 400; }
+
+  /* TRABALHOS */
+  .trabalhos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .trabalho-card {
+    background: var(--white); border: 1px solid var(--line);
+    border-radius: 12px; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .trabalho-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(10,22,40,0.08); }
+  .card-top { padding: 28px 28px 20px; border-bottom: 1px solid var(--line); }
+  .card-type { font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 8px; letter-spacing: -0.01em; }
+  .card-desc { font-size: 13px; color: var(--gray-500); line-height: 1.6; }
+  .card-bottom { padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; }
+  .card-meta { font-size: 12px; color: var(--gray-300); }
+  .card-link { font-size: 12px; font-weight: 500; color: var(--accent); text-decoration: none; }
+  .card-link:hover { text-decoration: underline; }
+
+  /* AUDIO */
+  .audio-section { background: var(--white); }
+  .audio-items { display: flex; flex-direction: column; gap: 4px; }
+  .audio-item {
+    display: flex; align-items: center; gap: 20px;
+    padding: 18px 24px;
+    background: var(--off-white);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    transition: background 0.2s;
+  }
+  .audio-item:hover { background: var(--gray-100); }
+  .play-btn {
+    width: 40px; height: 40px; min-width: 40px;
+    border-radius: 50%; background: var(--accent);
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .play-btn:hover { background: #1568b8; transform: scale(1.05); }
+  .play-icon { width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-left: 12px solid white; margin-left: 2px; }
+  .pause-icon { width: 12px; height: 14px; gap: 3px; }
+  .pause-icon span { display: block; width: 4px; height: 100%; background: white; border-radius: 2px; }
+  .audio-info { flex: 1; min-width: 0; }
+  .audio-title { font-size: 14px; font-weight: 500; color: #0d1b2e; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .audio-subtitle { font-size: 12px; color: var(--gray-500); }
+  .audio-duration { font-size: 12px; color: var(--gray-500); font-variant-numeric: tabular-nums; }
+  .audio-progress-wrap { flex: 2; height: 3px; background: var(--gray-300); border-radius: 2px; cursor: pointer; }
+  .audio-progress-bar { height: 100%; width: 0%; background: var(--accent); border-radius: 2px; transition: width 0.1s linear; }
+
+  /* VIDEOS */
+  .videos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .video-card {
+    border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--white);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  .video-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(10,22,40,0.08); }
+  .video-thumb {
+    position: relative; aspect-ratio: 16/9;
+    background: #000; overflow: hidden;
+  }
+  .video-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.2s; }
+  .video-card:hover .video-thumb img { opacity: 0.85; }
+  .video-play-overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .video-play-btn {
+    width: 52px; height: 52px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+  }
+  .video-card:hover .video-play-btn { transform: scale(1.1); }
+  .video-play-tri { width: 0; height: 0; border-top: 9px solid transparent; border-bottom: 9px solid transparent; border-left: 16px solid var(--accent); margin-left: 3px; }
+  .video-iframe-wrap { display: none; aspect-ratio: 16/9; }
+  .video-iframe-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+  .video-label { padding: 14px 16px; font-size: 13px; color: #0d1b2e; font-weight: 500; border-top: 1px solid var(--line); }
+  .video-sublabel { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+
+  /* PLATAFORMAS */
+  .plataformas { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 48px; }
+  .plat-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 22px; border: 1px solid var(--line);
+    border-radius: 8px; text-decoration: none;
+    font-size: 14px; font-weight: 500;
+    color: var(--navy); background: var(--white);
+    transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+  }
+  .plat-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(26,127,212,0.1); }
+  .plat-icon { font-size: 18px; }
+
+  /* CONTATO */
+  .contato-section { background: var(--off-white); }
+  .contato-desc { font-size: 16px; color: var(--gray-700); margin-bottom: 44px; max-width: 480px; line-height: 1.7; }
+  .contato-cards { display: flex; flex-wrap: wrap; gap: 16px; }
+  .contato-card {
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px 28px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 10px; text-decoration: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    min-width: 220px;
+  }
+  .contato-card:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(26,127,212,0.08); }
+  .contato-icon {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: rgba(26,127,212,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .contato-info { display: flex; flex-direction: column; }
+  .contato-tipo { font-size: 11px; color: var(--gray-500); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 2px; }
+  .contato-valor { font-size: 14px; color: #0d1b2e; font-weight: 400; }
+
+  /* FOOTER */
+  footer {
+    background: var(--navy); padding: 32px 6vw;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .footer-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: rgba(255,255,255,0.4); }
+  .footer-note { font-size: 12px; color: rgba(255,255,255,0.2); }
+
+  /* ANIMAÇÕES */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .hero-inner > * { animation: fadeUp 0.6s ease both; }
+  .hero-inner > *:nth-child(1) { animation-delay: 0.1s; }
+  .hero-inner > *:nth-child(2) { animation-delay: 0.2s; }
+  .hero-inner > *:nth-child(3) { animation-delay: 0.3s; }
+  .hero-inner > *:nth-child(4) { animation-delay: 0.4s; }
+  .hero-inner > *:nth-child(5) { animation-delay: 0.5s; }
+
+  /* RESPONSIVO */
+  @media (max-width: 720px) {
+    .sobre-grid { grid-template-columns: 1fr; gap: 40px; }
+    nav { padding: 0 5vw; }
+    .nav-links { gap: 18px; }
+    .nav-links a { font-size: 12px; }
+    section { padding: 72px 5vw; }
+    .hero { padding: 90px 5vw 72px; }
+    .contato-cards { flex-direction: column; }
+    .contato-card { min-width: unset; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">Castanho</a>
+  <div class="nav-links">
+    <a href="#sobre">Sobre</a>
+    <a href="#trabalhos">Trabalhos</a>
+    <a href="#audio">Áudio</a>
+    <a href="#videos">Vídeos</a>
+    <a href="#contato">Contato</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Disponível para projetos — Cuiabá, MT</div>
+    <h1>Miguel<br><span>Castanho</span></h1>
+    <p class="hero-sub">Produtor de áudio, compositor e beatmaker com 4 anos de experiência em gravação profissional, audiolivros e áudio-descrição.</p>
+    <div class="hero-tags">
+      <span class="htag">Gravação de Voz</span>
+      <span class="htag">Audiolivros</span>
+      <span class="htag">Áudio-Descrição</span>
+      <span class="htag">Eventos Culturais</span>
+      <span class="htag">FL Studio · 7 anos</span>
+      <span class="htag">Compositor · 10 anos</span>
+    </div>
+    <div class="hero-cta">
+      <a href="#contato" class="btn-primary">Entre em contato</a>
+      <a href="#audio" class="btn-ghost">Ouvir trabalhos</a>
+    </div>
+  </div>
+</section>
+
+<section id="sobre">
+  <p class="section-label">Quem sou</p>
+  <h2 class="section-title">Técnica, cultura<br>e linguagem</h2>
+  <div class="sobre-grid">
+    <div class="sobre-text">
+      <p>Sou produtor de áudio baseado em Cuiabá-MT, com formação prática em gravação e pós-produção de audiolivros para distribuição governamental gratuita a pessoas com deficiência visual — um trabalho que une técnica e impacto social real.</p>
+      <p>Durante 4 anos na Entrelinhas Editora, operei microfones, interfaces de áudio e dispositivos MIDI, dirigi sessões com narradores e trabalhei com controle acústico de ambientes. Participei também da equipe de produção de eventos culturais, incluindo o Festival do Chocolate MT.</p>
+      <p>Paralelamente, sou fundador da gravadora independente Nature Club 065 e artista solo sob o nome Castanho — compositor há 10 anos, com catálogo publicado no Spotify e colaborações com a cena underground local.</p>
+    </div>
+    <div class="sobre-stats">
+      <div class="stat">
+        <div class="stat-num">4+</div>
+        <div class="stat-label">Anos em produção de áudio profissional</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">10+</div>
+        <div class="stat-label">Anos de composição musical</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">7</div>
+        <div class="stat-label">Anos de experiência no FL Studio</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">6+</div>
+        <div class="stat-label">Lançamentos no Spotify</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="trabalhos">
+  <p class="section-label">Experiência</p>
+  <h2 class="section-title">Trabalhos e projetos</h2>
+  <div class="trabalhos-grid">
+
+    <div class="trabalho-card">
+      <div class="card-top">
+        <div class="card-type">Produção de Áudio</div>
+        <div class="card-title">Audiolivros Governamentais</div>
+        <div class="card-desc">Gravação, edição e pós-produção de audiolivros para editais federais e estaduais, distribuídos gratuitamente a pessoas com deficiência visual pela Entrelinhas Editora.</div>
+      </div>
+      <div class="card-bottom">
+        <span class="card-meta">2021 – 2025 · Entrelinhas Editora</span>
+      </div>
+    </div>
+
+    <div class="trabalho-card">
+      <div class="card-top">
+        <div class="card-type">Tecnologia Assistiva</div>
+        <div class="card-title">Áudio-Descrição</div>
+        <div class="card-desc">Produção de áudio-descrição para conteúdos culturais acessíveis — tecnologia que permite que pessoas com deficiência visual fruam de imagens, vídeos e eventos.</div>
+      </div>
+      <div class="card-bottom">
+        <span class="card-meta">2021 – 2025 · Entrelinhas Editora</span>
+      </div>
+    </div>
+
+    <div class="trabalho-card">
+      <div class="card-top">
+        <div class="card-type">Produção Musical · Sonoplastia</div>
+        <div class="card-title">Livro de Poesias Musicado</div>
+        <div class="card-desc">Produção completa de obra literária musicada com a Banda Colisão Interna — gravação, sonoplastia e mixagem. O disco está incorporado na obra física por QR code.</div>
+      </div>
+      <div class="card-bottom">
+        <span class="card-meta">Castanho + Colisão Interna</span>
+        <a href="https://open.spotify.com/intl-pt/album/5l0DbRcXhAmToSxLzXERAH?si=wSelihJwTteIniGhAlTVkQ" target="_blank" class="card-link">Ouvir no Spotify ↗</a>
+      </div>
+    </div>
+
+    <div class="trabalho-card">
+      <div class="card-top">
+        <div class="card-type">Produção Musical</div>
+        <div class="card-title">Distopia Kuyabana</div>
+        <div class="card-desc">Participação na produção do disco de Juan Vieira, artista da cena cuiabana. Projeto autoral com identidade regional forte.</div>
+      </div>
+      <div class="card-bottom">
+        <span class="card-meta">Juan Vieira</span>
+        <a href="https://open.spotify.com/search/Distopia%20Kuyabana" target="_blank" class="card-link">Ouvir no Spotify ↗</a>
+      </div>
+    </div>
+
+    <div class="trabalho-card">
+      <div class="card-top">
+        <div class="card-type">Evento Cultural</div>
+        <div class="card-title">Festival do Chocolate MT</div>
+        <div class="card-desc">Integrante da equipe de produção de um dos maiores festivais culturais do Mato Grosso — montagem, organização e operação do evento.</div>
+      </div>
+      <div class="card-bottom">
+        <span class="card-meta">Cuiabá, MT</span>
+      </div>
+    </div>
+
+    <div class="trabalho-card">
+      <div class="card-top">
+        <div class="card-type">Artista · Gravadora Independente</div>
+        <div class="card-title">Nature Club 065</div>
+        <div class="card-desc">Fundador e CEO de gravadora independente com 1 EP e 5 singles no Spotify sob o nome Castanho. Compositor há 10 anos, feats com artistas da cena underground de Cuiabá.</div>
+      </div>
+      <div class="card-bottom">
+        <span class="card-meta">Em atividade</span>
+        <a href="https://open.spotify.com/intl-pt/artist/3mO7Or1q2iXgvraqCWzhcZ?si=d8cc2c89635046a0" target="_blank" class="card-link">Spotify ↗</a>
+      </div>
+    </div>
+
+    <div class="trabalho-card">
+      <div class="card-top">
+        <div class="card-type">Certificação</div>
+        <div class="card-title">Produção Editorial de Audiolivro</div>
+        <div class="card-desc">Certificado em Produção Editorial de Audiolivro — Conceito e Prática (20h) pela LABPUB. Formação técnica focada em fluxo editorial e produção sonora.</div>
+      </div>
+      <div class="card-bottom">
+        <span class="card-meta">LABPUB · 20h</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="audio" class="audio-section">
+  <p class="section-label">Portfólio Sonoro</p>
+  <h2 class="section-title">Ouça o trabalho</h2>
+  <div class="audio-items">
+
+    <div class="audio-item" data-src="O_JARDIM_DA_MINHA_MAE.mp3">
+      <button class="play-btn" onclick="togglePlay(this)">
+        <div class="play-icon"></div>
+        <div class="pause-icon" style="display:none;"><span></span><span></span></div>
+      </button>
+      <div class="audio-info">
+        <div class="audio-title">O Jardim da Minha Mãe</div>
+        <div class="audio-subtitle">Audiolivro infantil — sonoplastia, gravação e produção completa</div>
+      </div>
+      <div class="audio-progress-wrap" onclick="seekAudio(event, this)">
+        <div class="audio-progress-bar"></div>
+      </div>
+      <div class="audio-duration">—:——</div>
+    </div>
+
+    <div class="audio-item" data-src="ESPIRITO-INDEPENDENTE-V2.mp3">
+      <button class="play-btn" onclick="togglePlay(this)">
+        <div class="play-icon"></div>
+        <div class="pause-icon" style="display:none;"><span></span><span></span></div>
+      </button>
+      <div class="audio-info">
+        <div class="audio-title">Espírito Independente</div>
+        <div class="audio-subtitle">Castanho feat. KT Gomeez — beat: Drallaz</div>
+      </div>
+      <div class="audio-progress-wrap" onclick="seekAudio(event, this)">
+        <div class="audio-progress-bar"></div>
+      </div>
+      <div class="audio-duration">—:——</div>
+    </div>
+
+  </div>
+
+  <div class="plataformas">
+    <a href="https://open.spotify.com/intl-pt/artist/3mO7Or1q2iXgvraqCWzhcZ?si=d8cc2c89635046a0" target="_blank" class="plat-btn">
+      <span class="plat-icon">🎵</span> Castanho no Spotify
+    </a>
+    <a href="https://www.youtube.com/@natureclub065" target="_blank" class="plat-btn">
+      <span class="plat-icon">▶</span> @natureclub065 no YouTube
+    </a>
+    <a href="https://www.instagram.com/castanho065" target="_blank" class="plat-btn">
+      <span class="plat-icon">📸</span> @castanho065 no Instagram
+    </a>
+  </div>
+</section>
+
+<section id="videos">
+  <p class="section-label">Clipes autorais</p>
+  <h2 class="section-title">Vídeos</h2>
+  <div class="videos-grid">
+
+    <div class="video-card" onclick="expandVideo(this, 'yrU_EZyblJI')">
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/yrU_EZyblJI/hqdefault.jpg" alt="Clipe Castanho">
+        <div class="video-play-overlay">
+          <div class="video-play-btn"><div class="video-play-tri"></div></div>
+        </div>
+      </div>
+      <div class="video-iframe-wrap"></div>
+      <div class="video-label">
+        Castanho
+        <div class="video-sublabel">Clipe autoral — Nature Club 065</div>
+      </div>
+    </div>
+
+    <div class="video-card" onclick="expandVideo(this, 'BYZJKyn1ayo')">
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/BYZJKyn1ayo/hqdefault.jpg" alt="Clipe Castanho">
+        <div class="video-play-overlay">
+          <div class="video-play-btn"><div class="video-play-tri"></div></div>
+        </div>
+      </div>
+      <div class="video-iframe-wrap"></div>
+      <div class="video-label">
+        Castanho
+        <div class="video-sublabel">Clipe autoral — Nature Club 065</div>
+      </div>
+    </div>
+
+    <div class="video-card" onclick="expandVideo(this, 'fAHy45KLEIE')">
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/fAHy45KLEIE/hqdefault.jpg" alt="Clipe Castanho">
+        <div class="video-play-overlay">
+          <div class="video-play-btn"><div class="video-play-tri"></div></div>
+        </div>
+      </div>
+      <div class="video-iframe-wrap"></div>
+      <div class="video-label">
+        Castanho
+        <div class="video-sublabel">Clipe autoral — Nature Club 065</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="contato" class="contato-section">
+  <p class="section-label">Vamos conversar</p>
+  <h2 class="section-title">Contato</h2>
+  <p class="contato-desc">Disponível para projetos em estúdio, produção de audiolivros, eventos culturais e colaborações musicais. Atendo presencialmente em Cuiabá-MT e remotamente.</p>
+  <div class="contato-cards">
+    <a href="mailto:miguelcccarracedo@gmail.com" class="contato-card">
+      <div class="contato-icon">✉</div>
+      <div class="contato-info">
+        <span class="contato-tipo">E-mail</span>
+        <span class="contato-valor">miguelcccarracedo@gmail.com</span>
+      </div>
+    </a>
+    <a href="https://wa.me/5565993593323" target="_blank" class="contato-card">
+      <div class="contato-icon">💬</div>
+      <div class="contato-info">
+        <span class="contato-tipo">WhatsApp</span>
+        <span class="contato-valor">(65) 99359-3323</span>
+      </div>
+    </a>
+    <a href="https://www.instagram.com/castanho065" target="_blank" class="contato-card">
+      <div class="contato-icon">📸</div>
+      <div class="contato-info">
+        <span class="contato-tipo">Instagram</span>
+        <span class="contato-valor">@castanho065</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-name">Miguel Castanho Carrion Carracedo</div>
+  <div class="footer-note">Cuiabá, MT · miguelcccarracedo@gmail.com</div>
+</footer>
+
+<script>
+  let currentAudio = null;
+  let currentItem = null;
+
+  function togglePlay(btn) {
+    const item = btn.closest('.audio-item');
+    const src = item.dataset.src;
+    if (!src) return;
+    const bar = item.querySelector('.audio-progress-bar');
+    const dur = item.querySelector('.audio-duration');
+    const playIcon = btn.querySelector('.play-icon');
+    const pauseIcon = btn.querySelector('.pause-icon');
+
+    if (currentAudio && currentItem !== item) {
+      currentAudio.pause();
+      const pp = currentItem.querySelector('.play-icon');
+      const pa = currentItem.querySelector('.pause-icon');
+      pp.style.display = '';
+      pa.style.display = 'none';
+      currentAudio = null;
+    }
+
+    if (!currentAudio || currentItem !== item) {
+      currentAudio = new Audio(src);
+      currentItem = item;
+      currentAudio.addEventListener('timeupdate', () => {
+        if (currentAudio.duration) {
+          bar.style.width = (currentAudio.currentTime / currentAudio.duration * 100) + '%';
+          dur.textContent = fmt(currentAudio.currentTime) + ' / ' + fmt(currentAudio.duration);
+        }
+      });
+      currentAudio.addEventListener('ended', () => {
+        bar.style.width = '0%';
+        playIcon.style.display = '';
+        pauseIcon.style.display = 'none';
+        currentAudio = null;
+      });
+    }
+
+    if (currentAudio.paused) {
+      currentAudio.play();
+      playIcon.style.display = 'none';
+      pauseIcon.style.display = 'flex';
+    } else {
+      currentAudio.pause();
+      playIcon.style.display = '';
+      pauseIcon.style.display = 'none';
+    }
+  }
+
+  function seekAudio(e, wrap) {
+    if (!currentAudio || !currentItem) return;
+    const item = wrap.closest('.audio-item');
+    if (item !== currentItem) return;
+    const rect = wrap.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    currentAudio.currentTime = pct * currentAudio.duration;
+  }
+
+  function fmt(s) {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  function expandVideo(card, videoId) {
+    const thumb = card.querySelector('.video-thumb');
+    const iframeWrap = card.querySelector('.video-iframe-wrap');
+    if (iframeWrap.style.display === 'block') return;
+    thumb.style.display = 'none';
+    iframeWrap.style.display = 'block';
+    iframeWrap.innerHTML = '<iframe src="https://www.youtube.com/embed/' + videoId + '?autoplay=1" allowfullscreen allow="autoplay"></iframe>';
+    card.onclick = null;
+  }
+</script>
+</body>
+</html>
